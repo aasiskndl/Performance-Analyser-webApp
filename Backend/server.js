@@ -8,60 +8,71 @@ app.use(cors());
 app.use(express.json());
 
 app.post('/analyze', async (req, res) => {
-    const { url } = req.body;
-    
+  try {
+    const { url } = req.body; 
+
     if (!url) {
-        return res.status(400).json({ error: 'URL is required' });
+      return res.status(400).json({ error: 'URL is required' });
     }
 
-    try {
-        const browser = await puppeteer.launch({
-            headless: 'new',
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
-        });
-        const page = await browser.newPage();
-        
-        const startTime = Date.now();
-        const response = await page.goto(url, {
-            waitUntil: 'networkidle2',
-            timeout: 30000
-        });
-        
-        if (!response.ok()) {
-            await browser.close();
-            return res.status(400).json({ error: `Failed to load page (HTTP ${response.status()})` });
-        }
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    
+    // Disable cache and set consistent conditions
+    await page.setCacheEnabled(false);
+    await page.setExtraHTTPHeaders({
+      'Accept-Encoding': 'gzip'
+    });
 
-        const endTime = Date.now();
-        const loadTime = endTime - startTime;
+    // Record detailed resources
+    const resources = [];
+    page.on('response', async (response) => {
+      const contentLength = response.headers()['content-length'];
+      const size = contentLength ? parseInt(contentLength) : 0;
+      
+      resources.push({
+        type: response.request().resourceType(),
+        size: size
+      });
+    });
 
-        const metrics = await page.metrics();
-        const performanceData = await page.evaluate(() => 
-            JSON.parse(JSON.stringify(window.performance.getEntries()))
-        );
+    const startTime = Date.now();
+    await page.goto(url, {
+      waitUntil: 'networkidle0',
+      timeout: 60000
+    });
+    
+    // Wait longer for potential lazy-loaded content
+    await new Promise(res => setTimeout(res, 3000));
+    
+    const loadTime = Date.now() - startTime;
 
-        let pageSize = 0;
-        let requests = 0;
+    // Calculate totals
+    const pageSize = resources.reduce((total, r) => total + r.size, 0);
+    const requestCount = resources.length;
 
-        performanceData.forEach(entry => {
-            if (entry.transferSize) {
-                pageSize += entry.transferSize;
-                requests++;
-            }
-        });
+    // Calculate breakdown by type
+    const breakdown = {};
+    resources.forEach(res => {
+      if (!breakdown[res.type]) {
+        breakdown[res.type] = { size: 0, count: 0 };
+      }
+      breakdown[res.type].size += res.size;
+      breakdown[res.type].count++;
+    });
 
-        await browser.close();
+    await browser.close();
 
-        res.json({
-            loadTime,
-            pageSize: pageSize,
-            requestCount: requests
-        });
-
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ error: 'Analysis failed', details: error.message });
-    }
+    res.json({
+      loadTime,
+      pageSize,
+      requestCount,
+      breakdown
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Analysis failed', details: error.message });
+  }
 });
 
 app.listen(port, () => {
