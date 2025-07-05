@@ -25,6 +25,7 @@ A comprehensive web performance analysis tool that measures critical website met
   - Clean, responsive interface
   - Visual metrics cards
   - Color-coded resource breakdown
+---
 
 ## How It Works
 
@@ -42,6 +43,7 @@ The application consists of a React frontend and an Express backend that uses Pu
 5. Backend calculates resource breakdown by type
 6. API returns metrics to frontend
 7. React displays results in card format with resource breakdown
+---
 
 ## Tech Stack
 
@@ -69,6 +71,7 @@ The application consists of a React frontend and an Express backend that uses Pu
 git clone https://github.com/your-username/website-performance-analyzer.git
 cd website-performance-analyzer
 ```
+---
 
 ## Installation of Backend dependencies
 
@@ -165,4 +168,4 @@ For additional help, open an issue on GitHub.
 
 ---
 
-Developed with ❤️ by Your Name
+Developed with ❤️ by Aashish
