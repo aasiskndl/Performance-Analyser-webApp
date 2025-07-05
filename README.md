@@ -6,7 +6,7 @@
 
 A comprehensive web performance analysis tool that measures critical website metrics including load time, page size, and resource requests.
 
-![Demo Screenshot](./screenshot.png)
+![Demo Screenshot](./Frontend/src/assets/screenshot.png)
 
 ## Features
 
