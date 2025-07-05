@@ -1,12 +1,38 @@
-# React + Vite
+# Website Performance Analyzer
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[![React](https://img.shields.io/badge/react-%2320232a.svg?logo=react&logoColor=%2361DAFB)](https://reactjs.org/)
+[![Express](https://img.shields.io/badge/express.js-%23404d59.svg?logo=express&logoColor=%2361DAFB)](https://expressjs.com/)
+[![Puppeteer](https://img.shields.io/badge/puppeteer-%2338B2AC.svg?logo=puppeteer&logoColor=white)](https://pptr.dev/)
 
-Currently, two official plugins are available:
+A comprehensive web performance analysis tool that measures critical website metrics including load time, page size, and resource requests.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+![Demo Screenshot](./screenshot.png)
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- ⚡ **Real-time Performance Metrics**
+  - Total page load duration
+  - Aggregate resource size (HTML, CSS, JS, images)
+  - Number of HTTP requests
+- 📊 **Resource Breakdown**
+  - Detailed analysis by resource type (scripts, images, stylesheets, etc.)
+  - Size and request count per resource category
+- 🔍 **Headless Browser Analysis**
+  - Uses Puppeteer for accurate real-browser measurements
+  - Captures lazy-loaded content and dynamic resources
+- 🎨 **Modern UI**
+  - Clean, responsive interface
+  - Visual metrics cards
+  - Color-coded resource breakdown
+
+## How It Works
+
+```mermaid
+graph TD
+    A[React Frontend] -->|Sends URL| B[Express Backend]
+    B -->|Launches| C[Headless Chrome]
+    C -->|Navigates to URL| D[Collects Metrics]
+    D -->|Calculates| E[Performance Data]
+    E -->|Returns| B
+    B -->|Sends| F[Formatted Results]
+    F -->|Displays| A
